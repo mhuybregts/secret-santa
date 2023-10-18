@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler as RequestHandler, HTTPServer as Server
 from urllib.parse import parse_qs
 import smtplib, ssl
 
@@ -8,7 +8,7 @@ EMAIL = 'no.reply.secret.santa.25@gmail.com'
 context = None
 password = None
 
-class CommandHandler(BaseHTTPRequestHandler):
+class CommandHandler(RequestHandler):
 
     def do_POST(self):
         if self.path == '/send_email':
@@ -37,6 +37,6 @@ if __name__ == '__main__':
     context = ssl.create_default_context()
 
     server_address = ('', 9000)  # Replace 9000 with your desired port
-    httpd = HTTPServer(server_address, CommandHandler)
+    httpd = Server(server_address, CommandHandler)
     print('Server is running...')
     httpd.serve_forever()
