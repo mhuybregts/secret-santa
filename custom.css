@@ -1,0 +1,16 @@
+.person-row {
+    color:white;
+    border-radius: 10px;
+}  
+
+.person-row.odd {
+    background-color: rgba(226, 24, 24, 0.8);
+}
+
+.person-row.even {
+    background-color: rgba(19, 147, 30, 0.8);
+}
+
+.person-row label {
+    font-weight: 400;
+}
