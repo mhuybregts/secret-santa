@@ -1,12 +1,13 @@
 from http.server import BaseHTTPRequestHandler as RequestHandler, HTTPServer as Server
 from urllib.parse import parse_qs
 import smtplib, ssl
+import webbrowser
 
 SMTP_PORT = 465
 EMAIL = 'no.reply.secret.santa.25@gmail.com'
+FILE_PATH = 'index.html'
 
-context = None
-password = None
+smtp_server = None
 
 class CommandHandler(RequestHandler):
 
@@ -20,23 +21,35 @@ class CommandHandler(RequestHandler):
             recipient = data['recipient'][0]
             message = data['message'][0]
 
-            # Login and send email
-            with smtplib.SMTP_SSL('smtp.gmail.com', SMTP_PORT, context=context) as server:
-                server.login(EMAIL, password)
-                server.sendmail(EMAIL, recipient, message)
+            smtp_server.sendmail(EMAIL, recipient, message)
 
             self.send_response(200)
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
 
-
-
 if __name__ == '__main__':    
     
-    password = input('Enter App Password: ')
     context = ssl.create_default_context()
+    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', SMTP_PORT, context=context)
+   
+    while True:
+        password = input('Enter App Password: ')
+        try:
+            smtp_server.login(user=EMAIL, password=password)
+            break
+        except smtplib.SMTPAuthenticationError: 
+            print('Invalid Credentials, Try Again')
 
+    
     server_address = ('', 9000)  # Replace 9000 with your desired port
     httpd = Server(server_address, CommandHandler)
-    print('Server is running...')
-    httpd.serve_forever()
+    
+    print('HTTP Server is Running...')
+    webbrowser.open(FILE_PATH)
+    
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print('Exiting...')
+        smtp_server.close()
+        exit(0)

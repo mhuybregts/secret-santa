@@ -63,8 +63,6 @@ $(document).ready(function(){
             var valid = false;
 
             do {
-                console.log(people);
-                console.log(index);
                 let match = people[index];
                 if (!match.available || person.exclude.includes(match.name)) {
                     index = (index + 1) % (peopleLength - 1);
@@ -76,7 +74,6 @@ $(document).ready(function(){
                     match.available = false;
                     valid = true;
                     person.match = match;
-                    console.log(person.name + ' got ' + match.name);
                 }
 
             } while (!valid);
@@ -87,12 +84,14 @@ $(document).ready(function(){
         // Send emails 
         people.forEach(function(person) {
             
-            let message = `Hello ${person.name}, 
+            let message = `
+            Hello ${person.name}, 
+            
             You have gotten ${person.match.name} for Secret Santa!
             Remember to keep it a secret (and get a good gift).
             
-            Merry Christmas
-            `
+            Merry Christmas!`
+
 
             var data = new URLSearchParams();
             data.append('recipient', person.email);
@@ -109,7 +108,6 @@ $(document).ready(function(){
             .catch(error => {
                 console.error('Error:', error);
             });
-
         });
     });
 });
