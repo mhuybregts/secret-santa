@@ -1,16 +1,16 @@
-from http.server import BaseHTTPRequestHandler as RequestHandler, HTTPServer as Server
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 import smtplib, ssl
 import webbrowser
 
 SMTP_PORT = 465
 EMAIL = 'no.reply.secret.santa.25@gmail.com'
-FILE_PATH = 'index.html'
+HOME_URL = 'http://localhost:9000/index.html'
 
 smtp_server = None
 
-class CommandHandler(RequestHandler):
-
+class CommandHandler(SimpleHTTPRequestHandler):
+    
     def do_POST(self):
         if self.path == '/send_email':
             content_length = int(self.headers['Content-Length'])
@@ -42,10 +42,10 @@ if __name__ == '__main__':
 
     
     server_address = ('', 9000)  # Replace 9000 with your desired port
-    httpd = Server(server_address, CommandHandler)
+    httpd = HTTPServer(server_address, CommandHandler)
     
     print('HTTP Server is Running...')
-    webbrowser.open(FILE_PATH)
+    webbrowser.open(HOME_URL)
     
     try:
         httpd.serve_forever()

@@ -34,6 +34,11 @@ $(document).ready(function(){
 
     $('#generate-pairs').on('click', function(){
 
+        $('#response-modal .modal-title').text('SECRET SANTA');
+        $('#response-modal .modal-body').text('Generating Pairs');
+        $('<div/>',{ id: 'loading',class: 'spinner-border'}).appendTo('#response-modal .modal-body');
+        $('#response-modal').modal('show');
+        
         var people = new Array();
         
         // Iterate through each row and create a person object
@@ -67,7 +72,13 @@ $(document).ready(function(){
                 if (!match.available || person.exclude.includes(match.name)) {
                     index = (index + 1) % (peopleLength - 1);
                     if (index == originalIndex) {
-                        $('#error-modal').modal('show');
+                        $('#response-modal .modal-title').text('OOPS!')
+                            .removeClass('text-success')
+                            .addClass('text-danger');
+
+                        $('#response-modal .modal-body').text('Looks like we couldn\'t get a match for everyone. Try Again.')
+                            .append('<br><small><b>TIP: Put the people who can\'t match with other people at the top</b></small>');
+                        
                         return false;
                     }
                 } else {
@@ -93,7 +104,7 @@ $(document).ready(function(){
             Merry Christmas!`
 
 
-            var data = new URLSearchParams();
+            let data = new URLSearchParams();
             data.append('recipient', person.email);
             data.append('message', message);
 
@@ -109,5 +120,13 @@ $(document).ready(function(){
                 console.error('Error:', error);
             });
         });
+
+        $('#response-modal .modal-title').text('SUCCESS!')
+            .removeClass('text-danger')
+            .addClass('text-success');
+
+        $('#response-modal .modal-footer small').remove();
+        $('#response-modal .modal-body').text('Everyone has gotten a match, check your email to see who you got.');
+
     });
 });
