@@ -1,11 +1,12 @@
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 import smtplib, ssl
+import configparser
 import webbrowser
 
-SMTP_PORT = 465
-EMAIL = 'no.reply.secret.santa.25@gmail.com'
-HOME_URL = 'http://localhost:9000/index.html'
+CONFIG_FILE = 'secret_santa.conf'
+config = configparser.ConfigParser()
+config.read(CONFIG_FILE)
 
 smtp_server = None
 
@@ -21,7 +22,7 @@ class CommandHandler(SimpleHTTPRequestHandler):
             recipient = data['recipient'][0]
             message = data['message'][0]
 
-            smtp_server.sendmail(EMAIL, recipient, message)
+            smtp_server.sendmail(config['Email']['email'], recipient, message)
 
             self.send_response(200)
             self.send_header('Content-type', 'text/plain')
@@ -30,22 +31,19 @@ class CommandHandler(SimpleHTTPRequestHandler):
 if __name__ == '__main__':    
     
     context = ssl.create_default_context()
-    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', SMTP_PORT, context=context)
+    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', int(config['Email']['smtp_port']), context=context)
    
-    while True:
-        password = input('Enter App Password: ')
-        try:
-            smtp_server.login(user=EMAIL, password=password)
-            break
-        except smtplib.SMTPAuthenticationError: 
-            print('Invalid Credentials, Try Again')
-
+    try:
+        smtp_server.login(user=config['Email']['email'], password=config['Email']['app_password'])
+    except smtplib.SMTPAuthenticationError: 
+        print('Invalid Credentials, Update Config File')
+        exit(0)
     
-    server_address = ('', 9000)  # Replace 9000 with your desired port
+    server_address = ('', int(config['GUI']['gui_port']))  # Replace 9000 with your desired port
     httpd = HTTPServer(server_address, CommandHandler)
     
     print('HTTP Server is Running...')
-    webbrowser.open(HOME_URL)
+    webbrowser.open(config['GUI']['home_url'])
     
     try:
         httpd.serve_forever()

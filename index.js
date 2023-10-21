@@ -1,5 +1,7 @@
 $(document).ready(function(){
 
+    Sortable.create(document.getElementById('people'));
+    
     $('#num-people').on('change', function(){
         
         let numPeople = $(this).val();
@@ -40,6 +42,7 @@ $(document).ready(function(){
         $('#response-modal').modal('show');
         
         var people = new Array();
+        var validated = true;
         
         // Iterate through each row and create a person object
         $('.person-row').each(function(){
@@ -48,14 +51,24 @@ $(document).ready(function(){
             let email = $(this).find('[name=email]').val();
             let exclude = $(this).find('[name=exclude]').val();
 
+            console.log(name)
+            console.log(email)
+
             if (name.length == 0 || email.length == 0) {
-                return false;
+                validated = false;
+                return;
             }
 
             let person = new Person(name, email, exclude);
             people.push(person);
 
         });
+
+        if (!validated) {
+            $('#response-modal .modal-body').text('Make sure everyone has a name and email!');
+            $('#loading').remove();
+            return false;
+        }
 
         // Iterate through array    
         var peopleLength = people.length;
