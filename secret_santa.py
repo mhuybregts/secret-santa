@@ -1,12 +1,12 @@
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 import smtplib, ssl
+from email.message import EmailMessage
 import configparser
 import webbrowser
 
-CONFIG_FILE = 'secret_santa.conf'
 config = configparser.ConfigParser()
-config.read(CONFIG_FILE)
+config.read('secret_santa.conf')
 
 smtp_server = None
 
@@ -14,15 +14,24 @@ class CommandHandler(SimpleHTTPRequestHandler):
     
     def do_POST(self):
         if self.path == '/send_email':
+            # Parse request
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length).decode('utf-8')
             data = parse_qs(post_data)
 
-            # Get information from the request
-            recipient = data['recipient'][0]
-            message = data['message'][0]
+            message = f"Hello {data['person'][0]},\n\n" \
+                      f"You have gotten {data['match'][0]} for Secret Santa!\n" \
+                       "Make sure you keep it a secret (and get a good gift).\n\n" \
+                       "Merry Christmas"
 
-            smtp_server.sendmail(config['Email']['email'], recipient, message)
+            # Construct email message from request data
+            msg = EmailMessage()
+            msg.set_content(message)
+            msg['Subject'] = 'Let\'s see who you got for Secret Santa!'
+            msg['From'] = config['Email']['email']
+            msg['To'] = data['address'][0]
+
+            smtp_server.send_message(msg)
 
             self.send_response(200)
             self.send_header('Content-type', 'text/plain')

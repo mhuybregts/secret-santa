@@ -105,21 +105,15 @@ $(document).ready(function(){
             people.splice(i, 0, person);
         }
 
+        let sent = true;
+
         // Send emails 
         people.forEach(function(person) {
             
-            let message = `
-            Hello ${person.name}, 
-            
-            You have gotten ${person.match.name} for Secret Santa!
-            Remember to keep it a secret (and get a good gift).
-            
-            Merry Christmas!`
-
-
             let data = new URLSearchParams();
-            data.append('recipient', person.email);
-            data.append('message', message);
+            data.append('person', person.name);
+            data.append('address', person.email);
+            data.append('match', person.match.name);
 
             fetch('http://localhost:9000/send_email', {
                 method: 'POST',
@@ -131,8 +125,15 @@ $(document).ready(function(){
             })
             .catch(error => {
                 console.error('Error:', error);
+                sent = false;
+                return;
             });
         });
+
+        if (!sent) {
+            alert('Server unable to send all emails');
+            return false;
+        }
 
         $('#response-modal .modal-title').text('SUCCESS!')
             .removeClass('text-danger')
