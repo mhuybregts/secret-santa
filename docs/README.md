@@ -5,4 +5,20 @@ Secret Santa tool with email capabilities. This tools lets a user add an arbitra
 ## Email Information
 
 Using Python to send emails: https://realpython.com/python-send-email/
-Information regarding the account used to send emails to participants is included in secret_santa.conf
+
+> Information regarding the account used to send emails is to be included in secret_santa.conf
+
+## Config File Format
+
+```conf
+# Email Settings
+[Email]
+email = "Enter the email you want to use"
+app_password = "Generate an app password for the email"
+smtp_port = 465
+
+[GUI]
+# If you update this field, make sure to update the home_url as well
+gui_port = 9000
+home_url = http://localhost:9000/index.html
+```
