@@ -6,6 +6,8 @@ Secret Santa tool with email capabilities. This tools lets a user add an arbitra
 
 Using Python to send emails: https://realpython.com/python-send-email/
 
+Generating app passwords in gmail: https://support.google.com/mail/answer/185833?hl=en
+
 > Information regarding the account used to send emails is to be included in secret_santa.conf
 
 ## Config File Format
@@ -13,8 +15,9 @@ Using Python to send emails: https://realpython.com/python-send-email/
 ```conf
 # Email Settings
 [Email]
-email = "Enter the email you want to use"
-app_password = "Generate an app password for the email"
+smtp_server = <Enter the name of the SMTP server>
+email = <Enter the email address you want to use>
+app_password = <Enter the password for the email address> # Use an app password for gmail
 smtp_port = 465
 
 [GUI]
@@ -22,3 +25,8 @@ smtp_port = 465
 gui_port = 9000
 home_url = http://localhost:9000/index.html
 ```
+
+## How to run
+
+Run [secret_santa.py](/secret_santa.py), a web browser will open where you can enter the names and email addresses
+of the people you want to include
